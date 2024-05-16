@@ -6,6 +6,10 @@ const screenShotView = document.querySelector("canvas");
 const context = screenShotView.getContext("2d");
 const takeScreenButton = document.querySelector("#take-screenshot");
 const saveScreenButton = document.querySelector("#save-screenshot");
+const screenSection = document.querySelector("#screenshot");
+const videoSection = document.querySelector("#cam-flux");
+const colorCheckBox = document.querySelector("#color-checkbox");
+let blackAndWhite = colorCheckBox.checked;
 let screenshot;
 // List cameras and microphones.
 navigator.mediaDevices
@@ -44,7 +48,7 @@ function displayVideoStream(mediaStream) {
   if (mediaStream?.active) {
     console.log(mediaStream);
     videoEl.srcObject = mediaStream;
-    takeScreenButton.removeAttribute("hidden");
+    videoSection.removeAttribute("hidden");
   }
 }
 takeScreenButton.addEventListener("click", takeScreenShot);
@@ -63,26 +67,31 @@ function takeScreenShot() {
   }
   context.clearRect(0, 0, screenShotView.width, screenShotView.height);
   context.drawImage(videoEl, 0, 0, screenShotView.width, screenShotView.height);
-  const imgData = context.getImageData(
-    0,
-    0,
-    screenShotView.width,
-    screenShotView.height
-  );
-  for (let i = 0; i < imgData.data.length; i += 4) {
-    const average =
-      (imgData.data[i] + imgData.data[i + 1] + imgData.data[i + 2]) / 3;
-    imgData.data[i] = average;
-    imgData.data[i + 1] = average;
-    imgData.data[i + 2] = average;
+  console.log(blackAndWhite);
+  if (blackAndWhite) {
+    const imgData = context.getImageData(
+      0,
+      0,
+      screenShotView.width,
+      screenShotView.height
+    );
+    for (let i = 0; i < imgData.data.length; i += 4) {
+      const average =
+        (imgData.data[i] + imgData.data[i + 1] + imgData.data[i + 2]) / 3;
+      imgData.data[i] = average;
+      imgData.data[i + 1] = average;
+      imgData.data[i + 2] = average;
+    }
+    console.log(imgData);
+    context.putImageData(imgData, 0, 0, 0, 0, imgData.width, imgData.height);
   }
-  console.log(imgData);
-  context.putImageData(imgData, 0, 0, 0, 0, imgData.width, imgData.height);
-
   screenshot = screenShotView.toDataURL();
   saveScreenButton.setAttribute("href", screenshot);
-  saveScreenButton.removeAttribute("hidden");
+  screenSection.removeAttribute("hidden");
 }
+colorCheckBox.addEventListener("change", (e) => {
+  blackAndWhite = e.target.checked;
+});
 saveScreenButton.addEventListener("click", sendToserver);
 function sendToserver() {
   const formData = new FormData();

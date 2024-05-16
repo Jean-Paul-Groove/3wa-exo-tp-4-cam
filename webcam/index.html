@@ -15,14 +15,16 @@
       </label>
       <button type="submit">Valider</button>
     </form>
-    <section id="cam-flux">
+    <section id="cam-flux" hidden>
       <video autoplay src=""></video>
-      <button id="take-screenshot" hidden>Prendre une photo</button>
+      <button id="take-screenshot">Prendre une photo</button>
+      <label for="color">Noir et blanc</label>
+      <input type="checkbox" name="color" id="color-checkbox" />
     </section>
 
-    <section id="screeenshot">
+    <section hidden id="screenshot">
       <canvas></canvas>
-      <a hidden id="save-screenshot" download="screeenshot">
+      <a id="save-screenshot" download="screeenshot">
         <button>Enregistrer la photo</button>
       </a>
     </section>
